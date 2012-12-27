@@ -2,9 +2,6 @@
 #
 # chkconfig: - 55 45
 # description:	The memcached daemon is a network memory cache service.
-# processname: memcached
-# config: /etc/sysconfig/memcached
-# pidfile: /var/run/memcached/memcached.pid
 
 # Standard LSB functions
 #. /lib/lsb/init-functions
@@ -17,9 +14,10 @@ USER=memcached
 MAXCONN=1024
 CACHESIZE=64
 OPTIONS=""
+INSTANCE_NAME=<%=instance %>
 
-if [ -f /etc/sysconfig/memcached ];then 
-	. /etc/sysconfig/memcached
+if [ -f /etc/sysconfig/$INSTANCE_NAME ];then 
+	. /etc/sysconfig/$INSTANCE_NAME
 fi
 
 # Check that networking is up.
@@ -32,8 +30,8 @@ fi
 
 RETVAL=0
 prog="memcached"
-pidfile=${PIDFILE-/var/run/memcached/memcached.pid}
-lockfile=${LOCKFILE-/var/lock/subsys/memcached}
+pidfile=${PIDFILE-/var/run/memcached/$INSTANCE_NAME.pid}
+lockfile=${LOCKFILE-/var/lock/subsys/$INSTANCE_NAME}
 
 start () {
 	echo -n $"Starting $prog: "
@@ -72,7 +70,7 @@ case "$1" in
 	stop
 	;;
   status)
-	status -p ${pidfile} memcached
+	status -p ${pidfile} $INSTANCE_NAME
 	RETVAL=$?
 	;;
   restart|reload|force-reload)

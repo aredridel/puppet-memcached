@@ -17,9 +17,15 @@ define memcached::instance (
     $_user = $user
   }
 
+  if ($name == 'default') {
+    $instance = $::memcached::params::service_name
+  } else {
+    $instance = "memcached-${name}"
+  }
+
   # Implement ensurance
 
-  file { "${memcached::params::config_dir}/memcached_${name}${memcached::params::config_ext}":
+  file { "${memcached::params::config_dir}/${instance}${memcached::params::config_ext}":
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
@@ -27,13 +33,19 @@ define memcached::instance (
     require => Package[$memcached::params::package_name],
   }
 
-  # init script creation here
+  file { "/etc/init.d/${instance}":
+    ensure  => 'present',
+    content => template('memcached/memcached_init.redhat.erb'),
+    owner   => 'root',
+    mode    => '0755',
+    notify  => Service["${instance}"],
+  }
 
-  service { "memcached_${name}":
+  service { $instance:
     ensure     => running,
     enable     => true,
     hasrestart => true,
     hasstatus  => false,
-    subscribe  => File["${memcached::params::config_dir}/memcached_${name}${memcached::params::config_ext}"],
+    require    => File["/etc/init.d/${instance}"],
   }
 }
