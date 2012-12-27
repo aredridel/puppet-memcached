@@ -3,14 +3,16 @@ class memcached::params {
     'Debian': {
       $package_name = 'memcached'
       $service_name = 'memcached'
-      $config_file  = '/etc/memcached.conf'
+      $config_dir   = '/etc'
+      $config_ext   = '.conf'
       $config_tmpl  = "$module_name/memcached.conf.erb"
       $user = 'nobody'
     }
     'RedHat': {
       $package_name = 'memcached'
       $service_name = 'memcached'
-      $config_file  = '/etc/sysconfig/memcached'
+      $config_dir   = '/etc/sysconfig'
+      $config_ext   = ''
       $config_tmpl  = "$module_name/memcached_sysconfig.erb"
       $user = 'memcached'
     }

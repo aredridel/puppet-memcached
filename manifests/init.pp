@@ -9,26 +9,25 @@ class memcached(
   $user            = $::memcached::params::user,
   $max_connections = '8192',
   $verbosity       = undef,
-  $unix_socket     = undef
+  $unix_socket     = undef,
+  $create_default  = true,
 ) inherits memcached::params {
 
   package { $memcached::params::package_name:
     ensure => $package_ensure,
   }
 
-  file { $memcached::params::config_file:
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template($memcached::params::config_tmpl),
-    require => Package[$memcached::params::package_name],
-  }
-
-  service { $memcached::params::service_name:
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => false,
-    subscribe  => File[$memcached::params::config_file],
+  memcached::instance { "default":
+    instance_ensure => 'present',
+    logfile         => $logfile,
+    max_memory      => $max_memory,
+    lock_memory     => $lock_memory,
+    listen_ip       => $listen_ip,
+    tcp_port        => $tcp_port,
+    udp_port        => $udp_port,
+    user            => $user,
+    max_connections => $max_connections,
+    verbosity       => $verbosity,
+    unix_socket     => $unix_socket,
   }
 }
