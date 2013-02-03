@@ -11,13 +11,14 @@ class memcached(
   $verbosity                = undef,
   $unix_socket              = undef,
   $install_default_instance = true,
+  $install_dev              = false
 ) inherits memcached::params {
 
   package { $memcached::params::package_name:
     ensure => $package_ensure,
   }
 
-  if ($install_default_instance == true) {
+  if $install_default_instance {
     memcached::instance { "default":
       instance_ensure => 'present',
       logfile         => $logfile,
@@ -31,5 +32,12 @@ class memcached(
       verbosity       => $verbosity,
       unix_socket     => $unix_socket,
     }
+
+  if $install_dev {
+    package { $memcached::params::dev_package_name:
+      ensure  => $package_ensure,
+      require => Package[$memcached::params::package_name]
+    }
+  }
   }
 }
