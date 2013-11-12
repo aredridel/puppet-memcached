@@ -46,6 +46,9 @@ define memcached::instance (
     enable     => true,
     hasrestart => true,
     hasstatus  => false,
-    require    => File["/etc/init.d/${instance}"],
+    require    => [
+      File["/etc/init.d/${instance}"],
+      File["${memcached::params::config_dir}/${instance}${memcached::params::config_ext}"],
+    ]
   }
 }
